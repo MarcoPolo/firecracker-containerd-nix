@@ -27,7 +27,7 @@ pkgs.buildGoModule rec {
     owner = "firecracker-microvm";
     repo = "firecracker-containerd";
     rev = "1cad9d98086719b8247b9cf2413988debfae9a95";
-    sha256 = "sha256:1wfs8jaaa8hzrr3kz6knw0p2zvq7rvh4wk7k468kpnl0zzsgvybw";
+    sha256 = "1f578bmrpacfbqj37kawl5661lpac9xxjqcbzcrhx48mymcrzyym";
     fetchSubmodules = true;
     # sha256 = pkgs.lib.fakeSha256;
     # rev = "v${version}";
