@@ -43,19 +43,21 @@ let
   containerd-wrapper = ''
     #!/usr/bin/env bash
     DIR=$(realpath $(dirname $0))
+    sudo $DIR/setup_thinpool.sh
     sudo PATH=$PATH FIRECRACKER_CONTAINERD_RUNTIME_CONFIG_PATH="$DIR/../firecracker-runtime.json" ${firecracker-containerd}/bin/firecracker-containerd --config=${config-toml}
   '';
     in
     pkgs.stdenv.mkDerivation
     {
     name = "firecracker-runtime";
-  src = firecracker-containerd;
+  src = ./setup_thinpool.sh;
   # unpackPhase = " ";
   dontUnpack = true;
   installPhase = ''
     mkdir -p $out/bin/
     echo '${firecracker-runtime-json}' > $out/firecracker-runtime.json
     echo '${containerd-wrapper}' > $out/bin/containerd
+    cp $src $out/bin/$(stripHash $src)
     chmod a+x $out/bin/containerd
     # cp bin/* $out/bin/
   '';
