@@ -29,3 +29,16 @@ sudo ctr --address /run/firecracker-containerd/containerd.sock images \
 ```
 
 Done! And the container is connected to the internet (test with `ping google.com`).
+
+
+# Thoughts on future work:
+
+1. Define a spec file (like docker compose)
+2. Use that spec file to create the worker nodes
+3. Query worker nodes to find their ip addresses
+4. start the control node with the ip addresses
+
+
+Other idea
+
+use nix's docker builder image to create custom images.
