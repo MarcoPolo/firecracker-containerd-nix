@@ -9,8 +9,8 @@ let
   firecracker-runtime-json = builtins.toJSON {
     firecracker_binary_path = "${firecracker}/bin/firecracker";
     kernel_args = "console=ttyS0 noapic reboot=k panic=1 pci=off nomodules ro systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init";
-    kernel_image_path = "/home/marco/firecracker-containerd/hello-vmlinux.bin";
-    root_drive = "/home/marco/firecracker-containerd/rootfs.img";
+    kernel_image_path = ./hello-vmlinux.bin;
+    root_drive = ./rootfs.img;
     default_network_interfaces = [
       {
         CNIConfig = {
