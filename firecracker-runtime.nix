@@ -56,9 +56,9 @@ let
   installPhase = ''
     mkdir -p $out/bin/
     echo '${firecracker-runtime-json}' > $out/firecracker-runtime.json
-    echo '${containerd-wrapper}' > $out/bin/containerd
+    echo '${containerd-wrapper}' > $out/bin/fc-containerd
     cp $src $out/bin/$(stripHash $src)
-    chmod a+x $out/bin/containerd
+    chmod a+x $out/bin/fc-containerd
     # cp bin/* $out/bin/
   '';
   # " firecracker-runtime.json "
