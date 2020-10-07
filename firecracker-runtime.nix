@@ -3,6 +3,10 @@
 , firecracker-containerd ? import ./firecracker-containerd.nix { inherit pkgs; }
 , fc-cni-plugins ? import ./fc-cni-plugins.nix { inherit pkgs; }
 , cni-conf ? import ./cni-conf.nix { inherit pkgs; }
+, state-dir ? "/run/firecracker-containerd"
+, lib-dir ? "/var/lib/firecracker-containerd"
+, devmapper-dir ? "${lib-dir}/snapshotter/devmapper"
+, dev-pool ? "fc-dev-thinpool"
 }:
 
 let
@@ -17,7 +21,7 @@ let
           NetworkName = "fcnet";
           InterfaceName = "veth0";
           ConfDir = "${cni-conf}";
-          BinPath = ["${fc-cni-plugins}/bin"];
+          BinPath = [ "${fc-cni-plugins}/bin" ];
         };
       }
     ];
@@ -28,60 +32,38 @@ let
   firecracker-runtime-path = builtins.toFile "firecracker-runtime.json" firecracker-runtime-json;
   config-toml = builtins.toFile "config.toml" ''
     disabled_plugins = ["cri"]
-    root = "/var/lib/firecracker-containerd/containerd"
-    state = "/run/firecracker-containerd"
+    root = "${lib-dir}/containerd"
+    state = "${state-dir}"
     [grpc]
-      address = "/run/firecracker-containerd/containerd.sock"
+      address = "${state-dir}/containerd.sock"
     [plugins]
       [plugins.devmapper]
-        pool_name = "fc-dev-thinpool"
+        pool_name = "${dev-pool}" 
         base_image_size = "10GB"
-        root_path = "/var/lib/firecracker-containerd/snapshotter/devmapper"
+        root_path = "${devmapper-dir}" 
 
     [debug]
       level = "debug"'';
   containerd-wrapper = ''
     #!/usr/bin/env bash
     DIR=$(realpath $(dirname $0))
-    sudo $DIR/setup_thinpool.sh
+    sudo DEVPOOL="${dev-pool}" DEVMAPPER_DIR="${devmapper-dir}" $DIR/setup_thinpool.sh
+    sleep 1
     sudo PATH=$PATH FIRECRACKER_CONTAINERD_RUNTIME_CONFIG_PATH="$DIR/../firecracker-runtime.json" ${firecracker-containerd}/bin/firecracker-containerd --config=${config-toml}
   '';
-    in
-    pkgs.stdenv.mkDerivation
-    {
+in
+pkgs.stdenv.mkDerivation
+  {
     name = "firecracker-runtime";
-  src = ./setup_thinpool.sh;
-  # unpackPhase = " ";
-  dontUnpack = true;
-  installPhase = ''
-    mkdir -p $out/bin/
-    echo '${firecracker-runtime-json}' > $out/firecracker-runtime.json
-    echo '${containerd-wrapper}' > $out/bin/fc-containerd
-    cp $src $out/bin/$(stripHash $src)
-    chmod a+x $out/bin/fc-containerd
-    # cp bin/* $out/bin/
-  '';
-  # " firecracker-runtime.json "
-  # (
-  #   builtins.toJSON {
-  #     firecracker_binary_path = "${firecracker}/bin/firecracker";
-  #   }
-  # );
+    src = ./setup_thinpool.sh;
+    # unpackPhase = " ";
+    dontUnpack = true;
+    installPhase = ''
+      mkdir -p $out/bin/
+      echo '${firecracker-runtime-json}' > $out/firecracker-runtime.json
+      echo '${containerd-wrapper}' > $out/bin/fc-containerd
+      cp $src $out/bin/$(stripHash $src)
+      chmod a+x $out/bin/fc-containerd
+      # cp bin/* $out/bin/
+    '';
   }
-# {
-#   "firecracker_binary_path": "/nix/store/g0vclp4ffymb94clrl6118rqq266q0yb-firecracker-0.22.0/bin/firecracker",
-#   "kernel_args": "console=ttyS0 noapic reboot=k panic=1 pci=off nomodules ro systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init",
-#   "kernel_image_path": "/home/marco/firecracker-containerd/hello-vmlinux.bin",
-#   "root_drive": "/home/marco/firecracker-containerd/rootfs.img",
-#   "default_network_interfaces": [
-#     {
-#       "CNIConfig": {
-#         "NetworkName": "fcnet",
-#         "InterfaceName": "veth0"
-#       }
-#     }
-#   ],
-#   "cpu_template": "T2",
-#   "log_levels": ["debug"],
-#   "metrics_fifo": "fc-metrics.fifo"
-# }
