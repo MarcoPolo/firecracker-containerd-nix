@@ -3,6 +3,8 @@
 # Sets up a devicemapper thin pool with loop devices in
 # /var/lib/firecracker-containerd/snapshotter/devmapper
 
+# In production we should likely not use loopback devices. But useful for experimenting and testing
+
 set -ex
 
 DATA_BLOCK_SIZE=128 # see https://www.kernel.org/doc/Documentation/device-mapper/thin-provisioning.txt
