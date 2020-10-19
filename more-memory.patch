@@ -1,0 +1,13 @@
+diff --git a/runtime/helpers.go b/runtime/helpers.go
+index 84a43f8..8bd4cd6 100644
+--- a/runtime/helpers.go
++++ b/runtime/helpers.go
+@@ -27,7 +27,7 @@ import (
+ )
+ 
+ const (
+-	defaultMemSizeMb = 128
++	defaultMemSizeMb = 256
+ 	defaultCPUCount  = 1
+ )
+ 

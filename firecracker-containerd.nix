@@ -23,6 +23,7 @@
 pkgs.buildGoModule rec {
   pname = "firecracker-containerd";
   version = "0.0.1";
+  patches = [./more-memory.patch];
   src = pkgs.fetchFromGitHub {
     owner = "firecracker-microvm";
     repo = "firecracker-containerd";
