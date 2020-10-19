@@ -10,7 +10,7 @@ set -ex
 DATA_BLOCK_SIZE=128 # see https://www.kernel.org/doc/Documentation/device-mapper/thin-provisioning.txt
 LOW_WATER_MARK=32768 # picked arbitrarily
 
-DIR=${DEVMAPPER_DIR:-'/var/lib/firecracker-containerd/snapshotter/devmapper' }
+DIR=${DEVMAPPER_DIR:-'/var/lib/firecracker-containerd/snapshotter/devmapper'}
 POOL=${DEVPOOL:-'fc-dev-thinpool'}
 
 mkdir -p $DIR

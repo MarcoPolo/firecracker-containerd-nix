@@ -47,9 +47,9 @@ let
   containerd-wrapper = ''
     #!/usr/bin/env bash
     DIR=$(realpath $(dirname $0))
-    sudo DEVPOOL="${dev-pool}" DEVMAPPER_DIR="${devmapper-dir}" $DIR/setup_thinpool.sh
+    PATH=${pkgs.utillinux + "/bin"}:${pkgs.lvm2 + "/bin"}:$PATH DEVPOOL="${dev-pool}" DEVMAPPER_DIR="${devmapper-dir}" $DIR/setup_thinpool.sh
     sleep 1
-    sudo PATH=$PATH FIRECRACKER_CONTAINERD_RUNTIME_CONFIG_PATH="$DIR/../firecracker-runtime.json" ${firecracker-containerd}/bin/firecracker-containerd --config=${config-toml}
+    PATH=$PATH FIRECRACKER_CONTAINERD_RUNTIME_CONFIG_PATH="$DIR/../firecracker-runtime.json" ${firecracker-containerd}/bin/firecracker-containerd --config=${config-toml}
   '';
 in
 pkgs.stdenv.mkDerivation

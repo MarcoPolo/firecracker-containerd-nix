@@ -2,6 +2,13 @@
 let
   cni-plugins = import ./cni-plugins.nix { inherit pkgs; };
   tc-redirect-tap = import ./tc-redirect-tap.nix { inherit pkgs; };
+  allowed-plugins = [
+    "bridge"
+    "firewall"
+    "tc-redirect-tap"
+    "host-local"
+  ];
+
 in
 pkgs.stdenv.mkDerivation {
   name = "fc-cni-plugins";
@@ -14,6 +21,6 @@ pkgs.stdenv.mkDerivation {
   '';
   installPhase = ''
     mkdir -p $out/bin
-    cp * $out/bin/
+    cp ${if builtins.length allowed-plugins > 0 then builtins.concatStringsSep " " allowed-plugins else "*"} $out/bin/
   '';
 }
