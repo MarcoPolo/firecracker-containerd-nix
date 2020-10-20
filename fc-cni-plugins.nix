@@ -7,6 +7,7 @@ let
     "firewall"
     "tc-redirect-tap"
     "host-local"
+    "loopback"
   ];
 
 in
